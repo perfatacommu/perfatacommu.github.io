@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PER FATA · 메인툿 양식</title>
+<title>PER FATA 메인툿 양식</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,6 +102,8 @@
     /* user-customizable via color pickers; independent of the theme accent above */
     --accent-picked:#c9a876;
     --ch-text-color:#ece7f6;
+
+    --title-gradient: linear-gradient(135deg, var(--gold) 0%, var(--text-main) 45%, var(--rose) 100%);
 }
 
 [data-theme="light"]{
@@ -115,6 +117,8 @@
     --text-main:#2b2838;
     --text-muted:#635f78;
     --text-faint:#8b87a0;
+
+    --title-gradient: linear-gradient(135deg, #2c28a0 0%, #3c37c7 50%, #6a63e6 100%);
 }
 
 *{ box-sizing:border-box; }
@@ -164,7 +168,7 @@ body{
     letter-spacing:0.03em;
     line-height:1;
     margin:0;
-    background:linear-gradient(135deg, var(--gold) 0%, var(--text-main) 45%, var(--rose) 100%);
+    background:var(--title-gradient);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -214,7 +218,7 @@ body{
 }
 
 .capture-frame.capturing{
-    padding:52px 40px;
+    padding:26px 20px;
     background:
         radial-gradient(ellipse 60% 50% at 20% 0%, rgba(201,168,118,0.10), transparent 60%),
         radial-gradient(ellipse 50% 40% at 100% 20%, rgba(185,135,144,0.10), transparent 60%),
@@ -238,11 +242,11 @@ body{
 
 /* ---------- Character header band (color-pickable name plate) ---------- */
 .card-header{
-    margin:0 -48px 32px;
-    padding:16px 28px;
+    margin:-56px -48px 32px;
+    padding:8px 22px;
     display:grid;
     grid-template-columns:1fr auto 1fr;
-    align-items:center;
+    align-items:end;
     gap:14px;
     background:var(--accent-picked);
     border-radius:18px 18px 0 0;
@@ -250,7 +254,7 @@ body{
 }
 
 @media (max-width: 640px){
-    .card-header{ margin:0 -22px 28px; padding:14px 18px; }
+    .card-header{ margin:-44px -22px 28px; padding:8px 16px; }
 }
 
 .card-header-star{
@@ -273,7 +277,7 @@ body{
 .ch-left{
     justify-self:start;
     display:flex;
-    align-items:baseline;
+    align-items:flex-end;
     gap:8px;
     flex-wrap:wrap;
     min-width:0;
@@ -282,7 +286,7 @@ body{
 .ch-right{
     justify-self:end;
     display:flex;
-    align-items:center;
+    align-items:flex-end;
     gap:6px;
     flex-wrap:wrap;
 }
@@ -343,6 +347,20 @@ body{
 
 .field:last-of-type{ margin-bottom:0; }
 
+.field-signoff{
+    font-family:'Makcasa', serif;
+    font-weight:normal;
+    font-size:clamp(20px, 3.7vw, 28px);
+    letter-spacing:0.03em;
+    line-height:1;
+    text-align:center;
+    margin:24px 0 0;
+    background:var(--title-gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
 .field-star{
     display:inline-flex;
     align-items:center;
@@ -385,14 +403,18 @@ body{
     background:rgba(0,0,0,0.16);
     border:1px solid var(--thread-soft);
     border-radius:10px;
-    padding:16px 18px;
+    padding:12px 18px;
     color:var(--text-main);
     font-family:'Pretendard', sans-serif;
     font-weight:300;
-    font-size:15px;
+    font-size:calc(15px - 1pt);
     line-height:1.8;
     outline:none;
     transition:border-color 0.2s ease, background 0.2s ease;
+}
+
+[data-theme="light"] .ta{
+    background:#dad9de;
 }
 
 .ta::placeholder{
@@ -404,6 +426,10 @@ body{
 textarea.ta:focus{
     border-color:var(--accent-picked);
     background:rgba(0,0,0,0.24);
+}
+
+[data-theme="light"] textarea.ta:focus{
+    background:#cfced4;
 }
 
 /* static replacement used only while generating the saved image:
@@ -521,9 +547,9 @@ textarea.ta:focus{
     display:flex;
     justify-content:center;
     align-items:baseline;
-    gap:10px;
+    gap:4px;
     flex-wrap:wrap;
-    margin-bottom:10px;
+    margin-bottom:4px;
 }
 
 .name-input{
@@ -553,7 +579,7 @@ textarea.ta:focus{
 
 .name-sep{
     color:var(--text-faint);
-    font-size:14px;
+    font-size:10px;
 }
 
 .stat-row{
@@ -802,6 +828,7 @@ footer a:hover{
                     <span class="label-en">Relationships</span>
                 </div>
                 <textarea class="ta" id="field-relation" placeholder="원하는 텍스트 관계에 대해 기재해주세요."></textarea>
+                <p class="field-signoff">PR </p>
             </div>
         </div>
     </div>
@@ -812,7 +839,7 @@ footer a:hover{
     </div>
 
     <footer>
-        <p>본 페이지는 자캐커뮤니티 'Per Fata' 러너들을 위해 만들어진 페이지입니다. 외부 유출을 금합니다.<br>모바일 이용시에는 사용중인 브라우저 어플리케이션의 'PC버전' 으로 변경해주시기 바랍니다.</p>
+        <p>본 페이지는 자캐커뮤니티 'Per Fata' 러너들을 위해 만들어진 페이지입니다. 외부 유출을 금합니다.<br>모바일 이용시에는 사용중인 브라우저 어플리케이션의 PC버전으로 변경해주시기 바랍니다.</p>
         <p>Created by <a href="https://x.com/PerFata_" target="_blank" rel="noopener noreferrer">@PerFata_</a></p>
     </footer>
 
