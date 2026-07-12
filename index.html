@@ -220,10 +220,7 @@ body{
 
 .capture-frame.capturing{
     padding:26px 20px;
-    background:
-        radial-gradient(ellipse 60% 50% at 20% 0%, rgba(201,168,118,0.10), transparent 60%),
-        radial-gradient(ellipse 50% 40% at 100% 20%, rgba(185,135,144,0.10), transparent 60%),
-        var(--bg-deep);
+    background:transparent;
 }
 
 /* ---------- Sheet card ---------- */
@@ -231,14 +228,14 @@ body{
     background:linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-soft) 100%);
     border:1px solid var(--thread-soft);
     border-radius:18px;
-    padding:56px 48px 48px;
+    padding:56px 48px 24px;
     position:relative;
     box-shadow:0 40px 80px -30px rgba(0,0,0,0.4);
     transition:background 0.2s ease, border-color 0.2s ease;
 }
 
 @media (max-width: 640px){
-    .sheet{ padding:44px 22px 36px; }
+    .sheet{ padding:44px 22px 18px; }
 }
 
 /* ---------- Character header band (color-pickable name plate) ---------- */
@@ -301,6 +298,7 @@ body{
     outline:none;
     color:var(--ch-text-color);
     padding:2px 1px;
+    line-height:1.15;
 }
 
 .ch-name-input::placeholder, .ch-origin-input::placeholder, .ch-keyword::placeholder{
@@ -334,7 +332,7 @@ body{
     font-weight:400;
     font-size:11px;
     text-align:center;
-    width:50px;
+    width:72px;
 }
 
 .ch-kw-dot{
@@ -454,12 +452,14 @@ textarea.ta:focus{
     opacity:0.55;
 }
 
-/* ---------- Tarot picker (Major Arcana) ---------- */
+/* ---------- Tarot picker (Major Arcana) — lives in the hero, above the color pickers ---------- */
 .tarot-picker{
     display:flex;
     gap:10px;
-    margin-bottom:14px;
+    max-width:420px;
+    margin:18px auto 0;
     flex-wrap:wrap;
+    justify-content:center;
 }
 
 .tarot-picker select{
@@ -538,11 +538,6 @@ textarea.ta:focus{
     color:var(--text-muted);
 }
 
-/* hide picker controls in the saved image, keep the drawn card */
-.capturing .tarot-picker{
-    display:none;
-}
-
 /* ---------- Character name / stat plate (within the 캐릭터 field) ---------- */
 .name-row{
     display:flex;
@@ -576,11 +571,6 @@ textarea.ta:focus{
 
 .name-input:focus{
     border-color:var(--accent-picked);
-}
-
-.name-sep{
-    color:var(--text-faint);
-    font-size:10px;
 }
 
 .stat-row{
@@ -724,6 +714,35 @@ footer a:hover{
         <h1>PR </h1>
         <p class="hero-sub">메인툿 양식</p>
 
+        <div class="tarot-picker">
+            <select id="tarot-select" aria-label="메이저 아르카나 선택">
+                <option value="" disabled selected>메이저 아르카나 선택</option>
+                <option value="0|THE FOOL|바보">0 · 바보</option>
+                <option value="I|THE MAGICIAN|마법사">I · 마법사</option>
+                <option value="II|THE HIGH PRIESTESS|여사제">II · 여사제</option>
+                <option value="III|THE EMPRESS|여황제">III · 여황제</option>
+                <option value="IV|THE EMPEROR|황제">IV · 황제</option>
+                <option value="V|THE HIEROPHANT|교황">V · 교황</option>
+                <option value="VI|THE LOVERS|연인">VI · 연인</option>
+                <option value="VII|THE CHARIOT|전차">VII · 전차</option>
+                <option value="VIII|STRENGTH|힘">VIII · 힘</option>
+                <option value="IX|THE HERMIT|은둔자">IX · 은둔자</option>
+                <option value="X|WHEEL OF FORTUNE|운명의 수레바퀴">X · 운명의 수레바퀴</option>
+                <option value="XI|JUSTICE|정의">XI · 정의</option>
+                <option value="XII|THE HANGED MAN|매달린 남자">XII · 매달린 남자</option>
+                <option value="XIII|DEATH|죽음">XIII · 죽음</option>
+                <option value="XIV|TEMPERANCE|절제">XIV · 절제</option>
+                <option value="XV|THE DEVIL|악마">XV · 악마</option>
+                <option value="XVI|THE TOWER|탑">XVI · 탑</option>
+                <option value="XVII|THE STAR|별">XVII · 별</option>
+                <option value="XVIII|THE MOON|달">XVIII · 달</option>
+                <option value="XIX|THE SUN|태양">XIX · 태양</option>
+                <option value="XX|JUDGEMENT|심판">XX · 심판</option>
+                <option value="XXI|THE WORLD|세계">XXI · 세계</option>
+            </select>
+            <button type="button" id="tarot-apply">적용</button>
+        </div>
+
         <div class="ch-tools">
             <label class="ch-tool-label">배경색
                 <input type="color" id="bandBgPicker" value="#c9a876">
@@ -739,49 +758,20 @@ footer a:hover{
 
             <div class="card-header" id="cardHeader">
                 <div class="ch-left">
-                    <input type="text" class="ch-name-input" id="ch-name" placeholder="캐릭터 이름" size="6">
-                    <input type="text" class="ch-origin-input" id="ch-original" placeholder="원문" size="6">
+                    <input type="text" class="ch-name-input" id="ch-name" placeholder="캐릭터 이름 입력" size="6">
+                    <input type="text" class="ch-origin-input" id="ch-original" placeholder="원문 입력" size="6">
                 </div>
                 <span class="card-header-star" aria-hidden="true">✦</span>
                 <div class="ch-right">
-                    <input type="text" class="ch-keyword" id="ch-kw1" placeholder="키워드">
+                    <input type="text" class="ch-keyword" id="ch-kw1" placeholder="성격 키워드 입력">
                     <span class="ch-kw-dot">·</span>
-                    <input type="text" class="ch-keyword" id="ch-kw2" placeholder="키워드">
+                    <input type="text" class="ch-keyword" id="ch-kw2" placeholder="성격 키워드 입력">
                     <span class="ch-kw-dot">·</span>
-                    <input type="text" class="ch-keyword" id="ch-kw3" placeholder="키워드">
+                    <input type="text" class="ch-keyword" id="ch-kw3" placeholder="성격 키워드 입력">
                 </div>
             </div>
 
             <div class="field">
-                <div class="tarot-picker">
-                    <select id="tarot-select" aria-label="메이저 아르카나 선택">
-                        <option value="" disabled selected>메이저 아르카나 선택</option>
-                        <option value="0|THE FOOL|바보">0 · 바보</option>
-                        <option value="I|THE MAGICIAN|마법사">I · 마법사</option>
-                        <option value="II|THE HIGH PRIESTESS|여사제">II · 여사제</option>
-                        <option value="III|THE EMPRESS|여황제">III · 여황제</option>
-                        <option value="IV|THE EMPEROR|황제">IV · 황제</option>
-                        <option value="V|THE HIEROPHANT|교황">V · 교황</option>
-                        <option value="VI|THE LOVERS|연인">VI · 연인</option>
-                        <option value="VII|THE CHARIOT|전차">VII · 전차</option>
-                        <option value="VIII|STRENGTH|힘">VIII · 힘</option>
-                        <option value="IX|THE HERMIT|은둔자">IX · 은둔자</option>
-                        <option value="X|WHEEL OF FORTUNE|운명의 수레바퀴">X · 운명의 수레바퀴</option>
-                        <option value="XI|JUSTICE|정의">XI · 정의</option>
-                        <option value="XII|THE HANGED MAN|매달린 남자">XII · 매달린 남자</option>
-                        <option value="XIII|DEATH|죽음">XIII · 죽음</option>
-                        <option value="XIV|TEMPERANCE|절제">XIV · 절제</option>
-                        <option value="XV|THE DEVIL|악마">XV · 악마</option>
-                        <option value="XVI|THE TOWER|탑">XVI · 탑</option>
-                        <option value="XVII|THE STAR|별">XVII · 별</option>
-                        <option value="XVIII|THE MOON|달">XVIII · 달</option>
-                        <option value="XIX|THE SUN|태양">XIX · 태양</option>
-                        <option value="XX|JUDGEMENT|심판">XX · 심판</option>
-                        <option value="XXI|THE WORLD|세계">XXI · 세계</option>
-                    </select>
-                    <button type="button" id="tarot-apply">적용</button>
-                </div>
-
                 <div class="tarot-display" id="tarot-display" hidden>
                     <span class="tarot-roman" id="tarot-roman"></span>
                     <span class="tarot-name" id="tarot-name"></span>
@@ -789,9 +779,8 @@ footer a:hover{
                 </div>
 
                 <div class="name-row">
-                    <input type="text" class="name-input" id="char-name-kr" placeholder="캐릭터 이름">
-                    <span class="name-sep">/</span>
-                    <input type="text" class="name-input" id="char-name-en" placeholder="영문 이름">
+                    <input type="text" class="name-input" id="char-name-kr" placeholder="캐릭터 이름 입력">
+                    <input type="text" class="name-input" id="char-name-en" placeholder="원문 입력">
                 </div>
 
                 <div class="stat-row">
@@ -962,10 +951,8 @@ document.getElementById('save-btn').addEventListener('click', function(){
     var replacements = swapForCapture(frame);
 
     var run = function(){
-        var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-deep').trim() || '#181628';
-
         html2canvas(frame, {
-            backgroundColor: bgColor,
+            backgroundColor: null,
             scale: 2,
             useCORS: true
         }).then(function(canvas){
