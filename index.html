@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Per Fata — 캐릭터 실 잣기</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+@font-face {
+    font-family: 'Cafe24AnemoneAir';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquareair.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
+:root{
+    --bg-deep:#181628;
+    --bg-panel:#221f3d;
+    --bg-panel-soft:#262244;
+    --thread:#4c4578;
+    --thread-soft:#332e57;
+    --gold:#c9a876;
+    --rose:#b98790;
+    --text-main:#ece7f6;
+    --text-muted:#8b86a8;
+    --text-faint:#655f8c;
+}
+
+*{ box-sizing:border-box; }
+
+html{ scroll-behavior:smooth; }
+
+body{
+    margin:0;
+    background:
+        radial-gradient(ellipse 60% 40% at 15% -5%, rgba(201,168,118,0.10), transparent 60%),
+        radial-gradient(ellipse 50% 35% at 100% 10%, rgba(185,135,144,0.10), transparent 60%),
+        var(--bg-deep);
+    color:var(--text-main);
+    font-family:'Cafe24AnemoneAir', sans-serif;
+    line-height:1.7;
+    min-height:100vh;
+    padding:64px 20px 120px;
+}
+
+/* faint starfield */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20% 30%, rgba(236,231,246,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 75% 15%, rgba(236,231,246,0.25), transparent),
+        radial-gradient(1px 1px at 60% 70%, rgba(236,231,246,0.3), transparent),
+        radial-gradient(1px 1px at 90% 60%, rgba(236,231,246,0.2), transparent),
+        radial-gradient(1.5px 1.5px at 35% 85%, rgba(236,231,246,0.25), transparent),
+        radial-gradient(1px 1px at 10% 65%, rgba(236,231,246,0.2), transparent);
+    background-size:100% 100%;
+    z-index:0;
+}
+
+.wrap{
+    position:relative;
+    z-index:1;
+    max-width:760px;
+    margin:0 auto;
+}
+
+/* ---------- Hero ---------- */
+.hero{
+    text-align:center;
+    margin-bottom:64px;
+}
+
+.hero .eyebrow{
+    font-size:12px;
+    letter-spacing:0.45em;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin:0 0 18px;
+}
+
+.hero h1{
+    font-weight:normal;
+    font-size:clamp(34px, 6.5vw, 50px);
+    letter-spacing:0.06em;
+    margin:0 0 16px;
+    background:linear-gradient(135deg, var(--gold) 0%, var(--text-main) 45%, var(--rose) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    color:var(--text-muted);
+    font-size:15px;
+    max-width:440px;
+    margin:0 auto;
+}
+
+.hero .rule{
+    width:1px;
+    height:40px;
+    margin:28px auto 0;
+    background:linear-gradient(var(--thread), transparent);
+}
+
+/* ---------- Capture frame (adds breathing room only while saving as image) ---------- */
+.capture-frame{
+    padding:0;
+    background:transparent;
+    border-radius:22px;
+    transition:padding 0.15s ease;
+}
+
+.capture-frame.capturing{
+    padding:52px 40px;
+    background:
+        radial-gradient(ellipse 60% 50% at 20% 0%, rgba(201,168,118,0.10), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 20%, rgba(185,135,144,0.10), transparent 60%),
+        var(--bg-deep);
+}
+
+/* ---------- Sheet card ---------- */
+.sheet{
+    background:linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-soft) 100%);
+    border:1px solid var(--thread-soft);
+    border-radius:18px;
+    padding:56px 48px 48px;
+    position:relative;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.55);
+}
+
+.sheet::before{
+    /* corner star ornament */
+    content:"✦";
+    position:absolute;
+    top:-13px;
+    left:50%;
+    transform:translateX(-50%);
+    color:var(--gold);
+    background:var(--bg-deep);
+    width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    border-radius:50%;
+    border:1px solid var(--thread-soft);
+}
+
+/* thread that stitches the sections together */
+.thread-line{
+    position:absolute;
+    left:48px;
+    top:56px;
+    bottom:48px;
+    width:1px;
+    background:repeating-linear-gradient(
+        to bottom,
+        var(--thread) 0px,
+        var(--thread) 4px,
+        transparent 4px,
+        transparent 9px
+    );
+}
+
+@media (max-width: 640px){
+    .thread-line{ display:none; }
+    .sheet{ padding:44px 22px 36px; }
+}
+
+.field{
+    position:relative;
+    padding-left:56px;
+    margin-bottom:44px;
+}
+
+@media (max-width: 640px){
+    .field{ padding-left:0; }
+}
+
+.field:last-of-type{ margin-bottom:0; }
+
+.field .node{
+    position:absolute;
+    left:41px;
+    top:6px;
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    background:var(--bg-panel);
+    border:1px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+}
+
+.field .node::after{
+    content:"";
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--gold);
+}
+
+@media (max-width: 640px){
+    .field .node{ display:none; }
+}
+
+.field .label-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:6px;
+    flex-wrap:wrap;
+}
+
+.field .label-kr{
+    font-size:19px;
+    color:var(--text-main);
+}
+
+.field .label-en{
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+}
+
+.field .hint{
+    font-size:13px;
+    color:var(--text-muted);
+    margin:0 0 14px;
+}
+
+textarea{
+    width:100%;
+    min-height:120px;
+    resize:vertical;
+    background:rgba(0,0,0,0.16);
+    border:1px solid var(--thread-soft);
+    border-radius:10px;
+    padding:16px 18px;
+    color:var(--text-main);
+    font-family:'Cafe24AnemoneAir', sans-serif;
+    font-size:15px;
+    line-height:1.8;
+    outline:none;
+    transition:border-color 0.2s ease, background 0.2s ease;
+}
+
+textarea::placeholder{
+    color:#6b6690;
+    font-family:'Cafe24AnemoneAir', sans-serif;
+}
+
+textarea:focus{
+    border-color:var(--gold);
+    background:rgba(0,0,0,0.24);
+}
+
+/* ---------- Tarot picker (Major Arcana) ---------- */
+.tarot-picker{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+
+.tarot-picker select{
+    flex:1 1 220px;
+    background:rgba(0,0,0,0.2);
+    border:1px solid var(--thread-soft);
+    border-radius:8px;
+    color:var(--text-main);
+    font-family:'Cafe24AnemoneAir', sans-serif;
+    font-size:14px;
+    padding:11px 14px;
+    outline:none;
+    cursor:pointer;
+}
+
+.tarot-picker select:focus{
+    border-color:var(--gold);
+}
+
+.tarot-picker button{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    font-family:'Cafe24AnemoneAir', sans-serif;
+    font-size:13px;
+    padding:11px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background 0.2s ease, color 0.2s ease;
+}
+
+.tarot-picker button:hover{
+    background:var(--gold);
+    color:var(--bg-deep);
+}
+
+.tarot-display{
+    text-align:center;
+    padding:22px 16px 26px;
+    margin-bottom:20px;
+    border-top:1px solid var(--thread-soft);
+    border-bottom:1px solid var(--thread-soft);
+}
+
+.tarot-display .tarot-roman{
+    display:block;
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:clamp(26px, 5vw, 34px);
+    letter-spacing:0.16em;
+    color:var(--gold);
+    margin-bottom:6px;
+}
+
+.tarot-display .tarot-name{
+    display:block;
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    font-size:clamp(14px, 3vw, 17px);
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--text-main);
+}
+
+.tarot-display .tarot-kr{
+    display:block;
+    margin-top:8px;
+    font-size:13px;
+    color:var(--text-muted);
+}
+
+/* hide picker controls in the saved image, keep the drawn card */
+.capturing .tarot-picker{
+    display:none;
+}
+
+/* ---------- Actions ---------- */
+.actions{
+    max-width:760px;
+    margin:36px auto 0;
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+button.spin{
+    font-family:'Cafe24AnemoneAir', sans-serif;
+    letter-spacing:0.04em;
+    font-size:14px;
+    background:transparent;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    padding:14px 30px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+button.spin:hover{
+    background:var(--gold);
+    color:var(--bg-deep);
+}
+
+button.spin:active{
+    transform:scale(0.97);
+}
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:36px;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--bg-panel);
+    border:1px solid var(--gold);
+    color:var(--text-main);
+    padding:12px 22px;
+    border-radius:999px;
+    font-size:13px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    z-index:10;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+footer{
+    text-align:center;
+    margin-top:56px;
+    color:var(--text-faint);
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+}
+
+@media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <div class="hero">
+        <p class="eyebrow">Per Fata</p>
+        <h1>실을 자아보세요</h1>
+        <p>운명으로 엮인 이야기 속, 당신의 캐릭터를 소개할 실 한 가닥을 이어보세요.</p>
+        <div class="rule"></div>
+    </div>
+
+    <div class="capture-frame" id="captureFrame">
+        <div class="sheet" id="sheet">
+            <div class="thread-line" aria-hidden="true"></div>
+
+            <div class="field">
+                <span class="node" aria-hidden="true"></span>
+                <div class="label-row">
+                    <span class="label-kr">캐릭터</span>
+                    <span class="label-en">Character</span>
+                </div>
+                <p class="hint">이름, 성격, 배경, 특징 등 자유롭게 서술해주세요.</p>
+
+                <div class="tarot-picker">
+                    <select id="tarot-select" aria-label="메이저 아르카나 선택">
+                        <option value="" disabled selected>메이저 아르카나 선택</option>
+                        <option value="0|THE FOOL|바보">0 · 바보</option>
+                        <option value="I|THE MAGICIAN|마법사">I · 마법사</option>
+                        <option value="II|THE HIGH PRIESTESS|여사제">II · 여사제</option>
+                        <option value="III|THE EMPRESS|여황제">III · 여황제</option>
+                        <option value="IV|THE EMPEROR|황제">IV · 황제</option>
+                        <option value="V|THE HIEROPHANT|교황">V · 교황</option>
+                        <option value="VI|THE LOVERS|연인">VI · 연인</option>
+                        <option value="VII|THE CHARIOT|전차">VII · 전차</option>
+                        <option value="VIII|STRENGTH|힘">VIII · 힘</option>
+                        <option value="IX|THE HERMIT|은둔자">IX · 은둔자</option>
+                        <option value="X|WHEEL OF FORTUNE|운명의 수레바퀴">X · 운명의 수레바퀴</option>
+                        <option value="XI|JUSTICE|정의">XI · 정의</option>
+                        <option value="XII|THE HANGED MAN|매달린 남자">XII · 매달린 남자</option>
+                        <option value="XIII|DEATH|죽음">XIII · 죽음</option>
+                        <option value="XIV|TEMPERANCE|절제">XIV · 절제</option>
+                        <option value="XV|THE DEVIL|악마">XV · 악마</option>
+                        <option value="XVI|THE TOWER|탑">XVI · 탑</option>
+                        <option value="XVII|THE STAR|별">XVII · 별</option>
+                        <option value="XVIII|THE MOON|달">XVIII · 달</option>
+                        <option value="XIX|THE SUN|태양">XIX · 태양</option>
+                        <option value="XX|JUDGEMENT|심판">XX · 심판</option>
+                        <option value="XXI|THE WORLD|세계">XXI · 세계</option>
+                    </select>
+                    <button type="button" id="tarot-apply">적용</button>
+                </div>
+
+                <div class="tarot-display" id="tarot-display" hidden>
+                    <span class="tarot-roman" id="tarot-roman"></span>
+                    <span class="tarot-name" id="tarot-name"></span>
+                    <span class="tarot-kr" id="tarot-kr"></span>
+                </div>
+
+                <textarea id="field-character" placeholder="캐릭터에 관해 서술해주세요."></textarea>
+            </div>
+
+            <div class="field">
+                <span class="node" aria-hidden="true"></span>
+                <div class="label-row">
+                    <span class="label-kr">오너</span>
+                    <span class="label-en">Owner</span>
+                </div>
+                <p class="hint">플레이어로서의 성향과 소통 방식을 알려주세요.</p>
+                <textarea id="field-owner" placeholder="오너 성향, 주의사항, 조율 등에 대해 기재해주세요."></textarea>
+            </div>
+
+            <div class="field">
+                <span class="node" aria-hidden="true"></span>
+                <div class="label-row">
+                    <span class="label-kr">원하는 텍스트 관계</span>
+                    <span class="label-en">Desired Ties</span>
+                </div>
+                <p class="hint">캐릭터가 맺고 싶은 관계의 결을 적어주세요.</p>
+                <textarea id="field-relation" placeholder="원하는 텍스트 관계에 대해 기재해주세요."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="spin" id="save-btn">실 정리해서 이미지로 저장하기</button>
+    </div>
+
+    <footer>Per Fata · Character Thread</footer>
+
+</div>
+
+<div class="toast" id="toast">✦ 이미지가 저장되었습니다</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// auto-grow textareas
+document.querySelectorAll('textarea').forEach(function(t){
+    var resize = function(){
+        t.style.height = 'auto';
+        t.style.height = t.scrollHeight + 'px';
+    };
+    t.addEventListener('input', resize);
+});
+
+// tarot arcana apply
+document.getElementById('tarot-apply').addEventListener('click', function(){
+    var select = document.getElementById('tarot-select');
+    if (!select.value) return;
+
+    var parts = select.value.split('|');
+    var roman = parts[0];
+    var eng = parts[1];
+    var kr = parts[2];
+
+    document.getElementById('tarot-roman').textContent = roman;
+    document.getElementById('tarot-name').textContent = eng;
+    document.getElementById('tarot-kr').textContent = kr;
+    document.getElementById('tarot-display').hidden = false;
+});
+
+// save the sheet as an image, with breathing room, excluding hero title and footer
+document.getElementById('save-btn').addEventListener('click', function(){
+    var btn = this;
+    var frame = document.getElementById('captureFrame');
+    var toast = document.getElementById('toast');
+
+    var showToast = function(msg){
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+    };
+
+    if (typeof html2canvas === 'undefined') {
+        showToast('이미지 저장 기능을 불러오지 못했습니다');
+        return;
+    }
+
+    btn.disabled = true;
+    frame.classList.add('capturing');
+
+    var run = function(){
+        html2canvas(frame, {
+            backgroundColor: '#181628',
+            scale: 2,
+            useCORS: true
+        }).then(function(canvas){
+            frame.classList.remove('capturing');
+            btn.disabled = false;
+
+            var link = document.createElement('a');
+            link.download = 'per-fata-character.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            showToast('✦ 이미지가 저장되었습니다');
+        }).catch(function(){
+            frame.classList.remove('capturing');
+            btn.disabled = false;
+            showToast('이미지 저장에 실패했습니다');
+        });
+    };
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(run);
+    } else {
+        run();
+    }
+});
+</script>
+
+</body>
+</html>
