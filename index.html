@@ -117,6 +117,7 @@
     --text-main:#2b2838;
     --text-muted:#635f78;
     --text-faint:#8b87a0;
+    --ch-text-color:#432f14;
 
     --title-gradient: linear-gradient(135deg, #2c28a0 0%, #3c37c7 50%, #6a63e6 100%);
 }
@@ -242,11 +243,12 @@ body{
 
 /* ---------- Character header band (color-pickable name plate) ---------- */
 .card-header{
+    position:relative;
     margin:-56px -48px 32px;
     padding:8px 22px;
-    display:grid;
-    grid-template-columns:1fr auto 1fr;
-    align-items:end;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
     gap:14px;
     background:var(--accent-picked);
     border-radius:18px 18px 0 0;
@@ -258,10 +260,15 @@ body{
 }
 
 .card-header-star{
-    /* real element (not a pseudo-element) so it stays perfectly centered
-       when rasterized for the saved image */
-    justify-self:center;
-    display:inline-flex;
+    /* straddles the band's top border, like the original top ornament;
+       centered with left/right + auto margin (no transform), which stays
+       reliable when rasterized for the saved image */
+    position:absolute;
+    top:-13px;
+    left:0;
+    right:0;
+    margin:0 auto;
+    display:flex;
     align-items:center;
     justify-content:center;
     width:26px;
@@ -271,11 +278,9 @@ body{
     border:1px solid var(--thread-soft);
     color:var(--accent-picked);
     font-size:13px;
-    flex-shrink:0;
 }
 
 .ch-left{
-    justify-self:start;
     display:flex;
     align-items:flex-end;
     gap:8px;
@@ -284,7 +289,6 @@ body{
 }
 
 .ch-right{
-    justify-self:end;
     display:flex;
     align-items:flex-end;
     gap:6px;
@@ -355,10 +359,7 @@ body{
     line-height:1;
     text-align:center;
     margin:24px 0 0;
-    background:var(--title-gradient);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
+    color:var(--accent-picked);
 }
 
 .field-star{
@@ -875,12 +876,26 @@ document.getElementById('tarot-apply').addEventListener('click', function(){
 });
 
 // color pickers: background band + accent decorations / header text color
+var textPicker = document.getElementById('bandTextPicker');
+var userSetTextColor = false;
+var textColorDefaults = { dark: '#ece7f6', light: '#432f14' };
+
+function applyTextColorDefault(theme){
+    if (userSetTextColor) return;
+    var v = textColorDefaults[theme];
+    textPicker.value = v;
+    document.documentElement.style.setProperty('--ch-text-color', v);
+}
+
 document.getElementById('bandBgPicker').addEventListener('input', function(e){
     document.documentElement.style.setProperty('--accent-picked', e.target.value);
 });
-document.getElementById('bandTextPicker').addEventListener('input', function(e){
+textPicker.addEventListener('input', function(e){
+    userSetTextColor = true;
     document.documentElement.style.setProperty('--ch-text-color', e.target.value);
 });
+
+applyTextColorDefault('dark');
 
 // light / dark theme toggle
 var isLight = false;
@@ -891,6 +906,7 @@ document.getElementById('theme-toggle').addEventListener('click', function(){
         ? 'images/per-fata-emblem-light.png'
         : 'images/per-fata-emblem.png';
     this.textContent = isLight ? '다크 모드' : '라이트 모드';
+    applyTextColorDefault(isLight ? 'light' : 'dark');
 });
 
 // ---- image export helpers -------------------------------------------------
