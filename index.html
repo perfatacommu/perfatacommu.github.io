@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PR  메인툿 양식</title>
+<title>PER FATA · 메인툿 양식</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,6 +91,23 @@
     --text-main:#ece7f6;
     --text-muted:#8b86a8;
     --text-faint:#655f8c;
+
+    /* user-customizable via color pickers; independent of the theme accent above */
+    --accent-picked:#c9a876;
+    --ch-text-color:#ece7f6;
+}
+
+[data-theme="light"]{
+    --bg-deep:#f0f3f4;
+    --bg-panel:#ececef;
+    --bg-panel-soft:#e2e0e6;
+    --thread:#b9b6c6;
+    --thread-soft:#d4d2da;
+    --gold:#a3793f;
+    --rose:#a06b76;
+    --text-main:#2b2838;
+    --text-muted:#635f78;
+    --text-faint:#8b87a0;
 }
 
 *{ box-sizing:border-box; }
@@ -109,6 +126,7 @@ body{
     line-height:1.7;
     min-height:100vh;
     padding:56px 20px 120px;
+    transition:background 0.2s ease, color 0.2s ease;
 }
 
 .wrap{
@@ -125,7 +143,7 @@ body{
 }
 
 .hero-emblem{
-    width:110px;
+    width:165px;
     height:auto;
     margin:0 auto 8px;
     display:block;
@@ -135,8 +153,9 @@ body{
 .hero h1{
     font-family:'Makcasa', serif;
     font-weight:normal;
-    font-size:clamp(40px, 7.5vw, 56px);
+    font-size:clamp(60px, 11vw, 84px);
     letter-spacing:0.03em;
+    line-height:1;
     margin:0;
     background:linear-gradient(135deg, var(--gold) 0%, var(--text-main) 45%, var(--rose) 100%);
     -webkit-background-clip:text;
@@ -149,7 +168,7 @@ body{
     font-size:13px;
     letter-spacing:0.22em;
     color:var(--text-muted);
-    margin:4px 0 0;
+    margin:0;
 }
 
 /* ---------- Capture frame (adds breathing room only while saving as image) ---------- */
@@ -175,17 +194,20 @@ body{
     border-radius:18px;
     padding:56px 48px 48px;
     position:relative;
-    box-shadow:0 40px 80px -30px rgba(0,0,0,0.55);
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.4);
+    transition:background 0.2s ease, border-color 0.2s ease;
 }
 
 .sheet::before{
-    /* corner star ornament */
+    /* top-center star ornament, centered with auto margins (avoids transform,
+       which html2canvas can misplace during capture) */
     content:"✦";
     position:absolute;
     top:-13px;
-    left:50%;
-    transform:translateX(-50%);
-    color:var(--gold);
+    left:0;
+    right:0;
+    margin:0 auto;
+    color:var(--accent-picked);
     background:var(--bg-panel);
     width:26px; height:26px;
     display:flex; align-items:center; justify-content:center;
@@ -194,59 +216,144 @@ body{
     border:1px solid var(--thread-soft);
 }
 
-/* thread that stitches the sections together (dashed border renders reliably when saved as an image) */
-.thread-line{
-    position:absolute;
-    left:48px;
-    top:56px;
-    bottom:48px;
-    width:0;
-    border-left:2px dashed var(--thread);
-}
-
 @media (max-width: 640px){
-    .thread-line{ display:none; }
     .sheet{ padding:44px 22px 36px; }
 }
 
-.field{
-    position:relative;
-    padding-left:56px;
-    margin-bottom:40px;
+/* ---------- Character header band (color-pickable name plate) ---------- */
+.ch-tools{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin:-56px -48px 12px;
+    padding:10px 20px 0;
 }
 
 @media (max-width: 640px){
-    .field{ padding-left:0; }
+    .ch-tools{ margin:-44px -22px 12px; }
+}
+
+.ch-tool-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:11px;
+    color:var(--text-muted);
+}
+
+.ch-tool-label input[type="color"]{
+    width:20px;
+    height:20px;
+    padding:0;
+    border:1px solid var(--thread-soft);
+    border-radius:50%;
+    cursor:pointer;
+    background:none;
+}
+
+.capturing .ch-tools{
+    display:none;
+}
+
+.card-header{
+    margin:0 -48px 32px;
+    padding:11px 28px;
+    min-height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    background:var(--accent-picked);
+    border-radius:18px 18px 0 0;
+    transition:background 0.15s ease;
+}
+
+@media (max-width: 640px){
+    .card-header{ margin:0 -22px 28px; padding:11px 18px; }
+}
+
+.ch-left{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.ch-right{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.ch-name-input, .ch-origin-input, .ch-keyword{
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed currentColor;
+    outline:none;
+    color:var(--ch-text-color);
+    font-family:'Pretendard', sans-serif;
+    padding:2px 1px;
+}
+
+.ch-name-input::placeholder, .ch-origin-input::placeholder, .ch-keyword::placeholder{
+    color:inherit;
+    opacity:0.55;
+}
+
+.ch-name-input{
+    font-weight:700;
+    font-size:15px;
+    width:96px;
+}
+
+.ch-origin-input{
+    font-weight:300;
+    font-size:11px;
+    width:70px;
+    opacity:0.85;
+}
+
+.ch-keyword{
+    font-weight:400;
+    font-size:11px;
+    text-align:center;
+    width:50px;
+}
+
+.ch-kw-dot{
+    color:var(--ch-text-color);
+    opacity:0.6;
+    font-size:11px;
+}
+
+/* ---------- Fields ---------- */
+.field{
+    position:relative;
+    margin-bottom:40px;
 }
 
 .field:last-of-type{ margin-bottom:0; }
 
-.field .node{
-    position:absolute;
-    left:41px;
-    top:6px;
-    width:15px;
-    height:15px;
+.field-star{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:20px;
+    height:20px;
     border-radius:50%;
     background:var(--bg-panel);
-    border:1px solid var(--gold);
-    display:flex; align-items:center; justify-content:center;
-}
-
-.field .node::after{
-    content:"";
-    width:5px; height:5px;
-    border-radius:50%;
-    background:var(--gold);
-}
-
-@media (max-width: 640px){
-    .field .node{ display:none; }
+    border:1px solid var(--thread-soft);
+    color:var(--accent-picked);
+    font-size:10px;
+    margin-right:10px;
+    flex-shrink:0;
 }
 
 .field .label-row{
     display:flex;
-    align-items:baseline;
+    align-items:center;
     gap:10px;
     margin-bottom:8px;
     flex-wrap:wrap;
@@ -266,7 +373,8 @@ body{
     color:var(--text-faint);
 }
 
-textarea{
+.ta{
+    display:block;
     width:100%;
     min-height:120px;
     resize:vertical;
@@ -283,15 +391,36 @@ textarea{
     transition:border-color 0.2s ease, background 0.2s ease;
 }
 
-textarea::placeholder{
-    color:#6b6690;
+.ta::placeholder{
+    color:var(--text-faint);
     font-family:'Pretendard', sans-serif;
     font-weight:300;
 }
 
-textarea:focus{
-    border-color:var(--gold);
+textarea.ta:focus{
+    border-color:var(--accent-picked);
     background:rgba(0,0,0,0.24);
+}
+
+/* static replacement used only while generating the saved image:
+   guarantees proper word-wrap and no clipping (form controls don't
+   reflect their live value or wrap text reliably in html2canvas) */
+.ta-static{
+    white-space:pre-wrap;
+    word-break:break-word;
+    overflow-wrap:break-word;
+}
+
+.input-static{
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    white-space:nowrap;
+    display:inline-block;
+}
+
+.is-placeholder{
+    opacity:0.55;
 }
 
 /* ---------- Tarot picker (Major Arcana) ---------- */
@@ -317,7 +446,7 @@ textarea:focus{
 }
 
 .tarot-picker select:focus{
-    border-color:var(--gold);
+    border-color:var(--accent-picked);
 }
 
 .tarot-picker button{
@@ -383,7 +512,7 @@ textarea:focus{
     display:none;
 }
 
-/* ---------- Character name / stat plate ---------- */
+/* ---------- Character name / stat plate (within the 캐릭터 field) ---------- */
 .name-row{
     display:flex;
     justify-content:center;
@@ -405,6 +534,7 @@ textarea:focus{
     padding:4px 2px;
     outline:none;
     width:150px;
+    flex-shrink:0;
     transition:border-color 0.2s ease;
 }
 
@@ -414,7 +544,7 @@ textarea:focus{
 }
 
 .name-input:focus{
-    border-color:var(--gold);
+    border-color:var(--accent-picked);
 }
 
 .name-sep{
@@ -426,7 +556,8 @@ textarea:focus{
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:8px;
+    gap:6px;
+    row-gap:8px;
     flex-wrap:wrap;
     margin-bottom:20px;
 }
@@ -442,17 +573,22 @@ textarea:focus{
     text-align:center;
     padding:2px 1px;
     outline:none;
-    width:72px;
+    flex-shrink:0;
     transition:border-color 0.2s ease, color 0.2s ease;
 }
 
-.stat-input::placeholder{
-    color:var(--text-faint);
+.stat-input:focus{
+    border-color:var(--accent-picked);
+    color:var(--text-main);
 }
 
-.stat-input:focus{
-    border-color:var(--gold);
-    color:var(--text-main);
+#char-age{ width:46px; }
+#char-origin{ width:60px; }
+#char-skill{ width:84px; }
+#char-body{ width:40px; }
+
+.stat-input::placeholder{
+    color:var(--text-faint);
 }
 
 .stat-dot{
@@ -553,18 +689,38 @@ footer a:hover{
 <div class="wrap">
 
     <div class="hero">
-        <img src="images/per-fata-emblem.png" alt="Per Fata emblem" class="hero-emblem">
-        <h1>PER FATA</h1>
+        <img src="images/per-fata-emblem.png" alt="Per Fata emblem" class="hero-emblem" id="heroEmblem">
+        <h1>PR </h1>
         <p class="hero-sub">메인툿 양식</p>
     </div>
 
     <div class="capture-frame" id="captureFrame">
         <div class="sheet" id="sheet">
-            <div class="thread-line" aria-hidden="true"></div>
+
+            <div class="ch-tools">
+                <label class="ch-tool-label">배경색
+                    <input type="color" id="bandBgPicker" value="#c9a876">
+                </label>
+                <label class="ch-tool-label">글자색
+                    <input type="color" id="bandTextPicker" value="#ece7f6">
+                </label>
+            </div>
+
+            <div class="card-header" id="cardHeader">
+                <div class="ch-left">
+                    <input type="text" class="ch-name-input" id="ch-name" placeholder="캐릭터 이름">
+                    <input type="text" class="ch-origin-input" id="ch-original" placeholder="원문">
+                </div>
+                <div class="ch-right">
+                    <input type="text" class="ch-keyword" id="ch-kw1" placeholder="키워드">
+                    <span class="ch-kw-dot">·</span>
+                    <input type="text" class="ch-keyword" id="ch-kw2" placeholder="키워드">
+                    <span class="ch-kw-dot">·</span>
+                    <input type="text" class="ch-keyword" id="ch-kw3" placeholder="키워드">
+                </div>
+            </div>
 
             <div class="field">
-                <span class="node" aria-hidden="true"></span>
-
                 <div class="tarot-picker">
                     <select id="tarot-select" aria-label="메이저 아르카나 선택">
                         <option value="" disabled selected>메이저 아르카나 선택</option>
@@ -611,41 +767,43 @@ footer a:hover{
                     <span class="stat-dot">·</span>
                     <input type="text" class="stat-input" id="char-origin" placeholder="출신지">
                     <span class="stat-dot">·</span>
-                    <input type="text" class="stat-input" id="char-skill" placeholder="특기">
+                    <input type="text" class="stat-input" id="char-skill" placeholder="특기 능력">
                     <span class="stat-dot">·</span>
-                    <input type="text" class="stat-input" id="char-body" placeholder="키 및 체중">
+                    <input type="text" class="stat-input" id="char-body" placeholder="키">
                 </div>
 
                 <div class="label-row">
+                    <span class="field-star" aria-hidden="true">✦</span>
                     <span class="label-kr">캐릭터</span>
                     <span class="label-en">Character</span>
                 </div>
 
-                <textarea id="field-character" placeholder="캐릭터에 관해 서술해주세요."></textarea>
+                <textarea class="ta" id="field-character" placeholder="캐릭터에 관해 서술해주세요."></textarea>
             </div>
 
             <div class="field">
-                <span class="node" aria-hidden="true"></span>
                 <div class="label-row">
+                    <span class="field-star" aria-hidden="true">✦</span>
                     <span class="label-kr">오너</span>
                     <span class="label-en">Owner</span>
                 </div>
-                <textarea id="field-owner" placeholder="오너 성향, 주의사항, 조율 등에 대해 기재해주세요."></textarea>
+                <textarea class="ta" id="field-owner" placeholder="오너 성향, 주의사항, 조율 등에 대해 기재해주세요."></textarea>
             </div>
 
             <div class="field">
-                <span class="node" aria-hidden="true"></span>
                 <div class="label-row">
-                    <span class="label-kr">원하는 텍스트 관계</span>
-                    <span class="label-en">Desired Ties</span>
+                    <span class="field-star" aria-hidden="true">✦</span>
+                    <span class="label-kr">희망하는 텍스트 관계</span>
+                    <span class="label-en">Relationships</span>
                 </div>
-                <textarea id="field-relation" placeholder="원하는 텍스트 관계에 대해 기재해주세요."></textarea>
+                <textarea class="ta" id="field-relation" placeholder="원하는 텍스트 관계에 대해 기재해주세요."></textarea>
             </div>
         </div>
     </div>
 
     <div class="actions">
-        <button class="spin" id="save-btn">실 정리해서 이미지로 저장하기</button>
+        <button class="spin" id="theme-toggle" type="button">라이트 모드</button>
+        <button class="spin" id="save-btn" type="button">이미지 저장</button>
     </div>
 
     <footer>
@@ -660,7 +818,7 @@ footer a:hover{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // auto-grow textareas
-document.querySelectorAll('textarea').forEach(function(t){
+document.querySelectorAll('textarea.ta').forEach(function(t){
     var resize = function(){
         t.style.height = 'auto';
         t.style.height = t.scrollHeight + 'px';
@@ -684,6 +842,55 @@ document.getElementById('tarot-apply').addEventListener('click', function(){
     document.getElementById('tarot-display').hidden = false;
 });
 
+// color pickers: background band + accent decorations / header text color
+document.getElementById('bandBgPicker').addEventListener('input', function(e){
+    document.documentElement.style.setProperty('--accent-picked', e.target.value);
+});
+document.getElementById('bandTextPicker').addEventListener('input', function(e){
+    document.documentElement.style.setProperty('--ch-text-color', e.target.value);
+});
+
+// light / dark theme toggle
+var isLight = false;
+document.getElementById('theme-toggle').addEventListener('click', function(){
+    isLight = !isLight;
+    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    document.getElementById('heroEmblem').src = isLight
+        ? 'images/per-fata-emblem-light.png'
+        : 'images/per-fata-emblem.png';
+    this.textContent = isLight ? '다크 모드' : '라이트 모드';
+});
+
+// ---- image export helpers -------------------------------------------------
+// Form controls (textarea/input) don't reliably reflect their live value or
+// wrap text when rasterized by html2canvas, so for the saved image we swap
+// each one for a plain div carrying the same classes (same look) with the
+// current value as plain text, which renders and wraps correctly.
+function swapForCapture(root){
+    var fields = root.querySelectorAll('textarea, input[type="text"]');
+    var replacements = [];
+
+    fields.forEach(function(el){
+        var hasValue = el.value && el.value.trim().length > 0;
+        var div = document.createElement('div');
+        div.className = el.className + (el.tagName === 'TEXTAREA' ? ' ta-static' : ' input-static') + (hasValue ? '' : ' is-placeholder');
+        div.textContent = hasValue ? el.value : (el.getAttribute('placeholder') || '');
+
+        el.parentNode.insertBefore(div, el);
+        el.style.display = 'none';
+        replacements.push({ el: el, div: div });
+    });
+
+    return replacements;
+}
+
+function restoreAfterCapture(replacements){
+    replacements.forEach(function(r){
+        r.div.remove();
+        r.el.style.display = '';
+    });
+}
+
 // save the sheet as an image, with breathing room, excluding hero title and footer
 document.getElementById('save-btn').addEventListener('click', function(){
     var btn = this;
@@ -704,12 +911,17 @@ document.getElementById('save-btn').addEventListener('click', function(){
     btn.disabled = true;
     frame.classList.add('capturing');
 
+    var replacements = swapForCapture(frame);
+
     var run = function(){
+        var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-deep').trim() || '#181628';
+
         html2canvas(frame, {
-            backgroundColor: '#181628',
+            backgroundColor: bgColor,
             scale: 2,
             useCORS: true
         }).then(function(canvas){
+            restoreAfterCapture(replacements);
             frame.classList.remove('capturing');
             btn.disabled = false;
 
@@ -720,6 +932,7 @@ document.getElementById('save-btn').addEventListener('click', function(){
 
             showToast('✦ 이미지가 저장되었습니다');
         }).catch(function(){
+            restoreAfterCapture(replacements);
             frame.classList.remove('capturing');
             btn.disabled = false;
             showToast('이미지 저장에 실패했습니다');
